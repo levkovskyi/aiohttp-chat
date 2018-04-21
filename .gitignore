@@ -1,0 +1,14 @@
+# Environment
+.env
+
+# Python
+*.pyc
+
+# Logs
+*.log
+
+# IDE
+.idea
+
+# MacOS
+.DS_Store
