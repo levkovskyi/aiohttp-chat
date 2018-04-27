@@ -5,13 +5,15 @@ from aiohttp import web
 import hashlib
 from motor import motor_asyncio as ma
 
-import settings
-from settings import log
+from middlewares import authorize
 from routes import routes
+from settings import log
+import settings
 
 
 middle = [
     session_middleware(EncryptedCookieStorage(hashlib.sha256(bytes(settings.SECRET_KEY, 'utf-8')).digest())),
+    authorize
 ]
 
 app = web.Application(middlewares=middle)
