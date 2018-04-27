@@ -25,7 +25,7 @@ app.router.add_static('/static', 'static', name='static')
 
 # db connect
 app.client = ma.AsyncIOMotorClient(settings.MONGO_HOST)
-app.db = app.client[routes.MONGO_DB_NAME]
+app.db = app.client[settings.MONGO_DB_NAME]
 # end db connect
 
 log.debug('start server')
