@@ -1,6 +1,8 @@
 from aiohttp_session import session_middleware
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from aiohttp import web
+import aiohttp_jinja2
+import jinja2
 
 import hashlib
 from motor import motor_asyncio as ma
@@ -17,6 +19,8 @@ middle = [
 ]
 
 app = web.Application(middlewares=middle)
+
+aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 
 # route part
 for route in routes:

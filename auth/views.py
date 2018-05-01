@@ -1,6 +1,7 @@
 from time import time
 from bson.objectid import ObjectId
 
+import aiohttp_jinja2
 from aiohttp import web
 from aiohttp_session import get_session
 
@@ -9,7 +10,7 @@ from auth.utils import error_json
 
 
 def redirect(request, router_name):
-    url = request.app.router[router_name].url()
+    url = request.app.router[router_name].url_for()
     raise web.HTTPFound(url)
 
 
@@ -21,11 +22,12 @@ def set_session(session, user_id, request):
 
 class Login(web.View):
 
+    @aiohttp_jinja2.template('auth/login.html')
     async def get(self):
         session = await get_session(self.request)
         if session.get('user'):
             redirect(self.request, 'main')
-        return web.Response(text='Please enter login or email')
+        return {'content': 'Please enter login or email'}
 
     async def post(self):
         data = await self.request.post()
@@ -40,11 +42,12 @@ class Login(web.View):
 
 class SignIn(web.View):
 
+    @aiohttp_jinja2.template('auth/sign.html')
     async def get(self, **kwargs):
         session = await get_session(self.request)
         if session.get('user'):
             redirect(self.request, 'main')
-        return web.Response(text='Please enter your data')
+        return {'content': 'Please enter your data'}
 
     async def post(self, **kwargs):
         data = await self.request.post()
