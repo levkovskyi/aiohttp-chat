@@ -6,7 +6,7 @@ from aiohttp import web
 from aiohttp_session import get_session
 
 from auth.models import User
-from auth.utils import error_json
+from utils import error_json
 
 
 def redirect(request, router_name):
@@ -60,7 +60,7 @@ class SignIn(web.View):
             return web.Response(content_type='application/json', text=error_json(result))
 
 
-class SignOut(web.View):
+class Logout(web.View):
 
     async def get(self, **kwargs):
         session = await get_session(self.request)

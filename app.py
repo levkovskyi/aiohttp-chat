@@ -9,6 +9,7 @@ from motor import motor_asyncio as ma
 
 from middlewares import authorize
 from routes import routes
+from utils import ws_shutdown
 from settings import log
 import settings
 
@@ -33,6 +34,9 @@ app.router.add_static('/static', 'static', name='static')
 app.client = ma.AsyncIOMotorClient(settings.MONGO_HOST)
 app.db = app.client[settings.MONGO_DB_NAME]
 # end db connect
+
+app.on_cleanup.append(ws_shutdown)
+app['websockets'] = []
 
 log.debug('start server')
 web.run_app(app)

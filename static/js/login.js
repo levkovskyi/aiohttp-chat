@@ -11,10 +11,8 @@ $(document).ready(function(){
     $('#submit').click(function(){
         var login = $('#login').val(),
             password = $('#password').val();
-        console.log(login, 'if pass the same');
         if(login && password){
             $.post('login', {'login': login, 'password': password}, function(data){
-                console.log(data);
                 if (data.error){
                     showError(data.error);
                 }else{

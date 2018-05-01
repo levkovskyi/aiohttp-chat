@@ -1,8 +1,10 @@
-from auth.views import Login, SignIn, SignOut
+from auth.views import Login, SignIn, Logout
+from chat.views import ChatList
 
 
 routes = [
+    ('GET', '/', ChatList, 'main'),
     ('*',   '/login',   Login,     'login'),
     ('*',   '/sign-in',  SignIn,    'sign_in'),
-    ('*',   '/logout', SignOut,   'logout'),
+    ('*',   '/logout', Logout,   'logout'),
 ]

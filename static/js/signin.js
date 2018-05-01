@@ -13,12 +13,10 @@ $(document).ready(function(){
             email = $('#email').val(),
             password = $('#password'),
             password2 = $('#password2');
-        console.log(login, email, password.val(), password2.val());
         if(password.val() === password2.val()){
 
             if (login && email && password){
                 $.post('sign-in', {'login': login, 'email': email, 'password': password.val()}, function(data){
-                    console.log(data);
                     if (data.error){
                         showError(data.error)
                     }else{
