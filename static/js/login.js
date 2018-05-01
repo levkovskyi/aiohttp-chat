@@ -14,6 +14,7 @@ $(document).ready(function(){
         if(login && password){
             $.post('login', {'login': login, 'password': password}, function(data){
                 if (data.error){
+                    $('#password').val("");
                     showError(data.error);
                 }else{
                     window.location.href = '/';

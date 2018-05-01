@@ -37,7 +37,8 @@ class Login(web.View):
             session = await get_session(self.request)
             set_session(session, str(result['_id']), self.request)
         else:
-            return web.Response(content_type='application/json', text=error_json(result))
+            return web.Response(content_type='application/json', text=error_json('The username or password you '
+                                                                                 'entered is incorrect'))
 
 
 class SignIn(web.View):
