@@ -1,13 +1,14 @@
 import aiohttp_jinja2
-from aiohttp_session import get_session
 from aiohttp import web, WSMsgType
 
-from auth.models import User
 from chat.models import Message
+from core.decorators import login_required
 from settings import log
 
 
 class ChatList(web.View):
+
+    @login_required
     @aiohttp_jinja2.template('chat/index.html')
     async def get(self):
         message = Message(self.request.app.db)
@@ -16,13 +17,14 @@ class ChatList(web.View):
 
 
 class WebSocket(web.View):
+
+    @login_required
     async def get(self):
         ws = web.WebSocketResponse()
         await ws.prepare(self.request)
 
-        session = await get_session(self.request)
-        user = User(self.request.app.db, {'id': session.get('user')})
-        login = await user.get_login()
+        user = self.request.user
+        login = user.get('login')
 
         for _ws in self.request.app['websockets']:
             await _ws.send_str('%s joined' % login)

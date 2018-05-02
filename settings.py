@@ -26,3 +26,5 @@ MONGO_DB_NAME = env.str('MONGO_DB_NAME')
 
 MESSAGE_COLLECTION = 'messages'
 USER_COLLECTION = 'users'
+
+STATIC_DIR = 'static'

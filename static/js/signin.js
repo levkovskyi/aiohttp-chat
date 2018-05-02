@@ -1,9 +1,5 @@
 $(document).ready(function(){
 
-    $('#login').click(function(){
-        window.location.href = "login"
-    });
-
     function showError(error){
         $('#error').html(error)
     }
@@ -11,12 +7,12 @@ $(document).ready(function(){
     $('#submit').click(function(){
         var login = $('#login_text').val(),
             email = $('#email').val(),
-            password = $('#password'),
-            password2 = $('#password2');
-        if(password.val() === password2.val()){
+            password = $('#password').val(),
+            password2 = $('#password2').val();
+        if(password === password2){
 
             if (login && email && password){
-                $.post('sign-in', {'login': login, 'email': email, 'password': password.val()}, function(data){
+                $.post('sign-in', {'login': login, 'email': email, 'password': password}, function(data){
                     if (data.error){
                         showError(data.error)
                     }else{
@@ -29,5 +25,7 @@ $(document).ready(function(){
         }else{
             showError('Passwords must be the same');
         }
+        $('#password').val("");
+        $('#password2').val("");
     });
 });

@@ -16,9 +16,9 @@ class User:
     async def check_user(self, **kwargs):
         return await self.collection.find_one({'login': self.login})
 
-    async def get_login(self, **kwargs):
+    async def get_user(self, **kwargs):
         user = await self.collection.find_one({'_id': ObjectId(self.id)})
-        return user.get('login')
+        return user
 
     async def create_user(self, **kwargs):
         user = await self.check_user()

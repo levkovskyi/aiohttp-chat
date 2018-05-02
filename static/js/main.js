@@ -60,10 +60,6 @@ $(document).ready(function(){
         showMessage(event.data);
     };
 
-    $('#logout').click(function(){
-        window.location.href = "logout";
-    });
-
     sock.onclose = function(event){
         if(event.wasClean){
             showMessage('Clean connection end');

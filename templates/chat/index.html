@@ -16,7 +16,7 @@ Main Chat page
     <p>
         <input  type="text" id="message" autocomplete="off">
         <input class="btn btn-primary" type="submit" id='submit' value="Send">
-        <input class="btn btn-default" type="button" id="logout" value="Logout">
+        <a href="{{ app.router['logout'].url_for() }}" class="btn btn-default" id="logout">Logout</a>
     </p>
 {% endblock %}
 

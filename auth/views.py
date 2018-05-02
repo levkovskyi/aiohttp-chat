@@ -1,72 +1,67 @@
 from time import time
-from bson.objectid import ObjectId
 
 import aiohttp_jinja2
 from aiohttp import web
-from aiohttp_session import get_session
+from bson.objectid import ObjectId
 
 from auth.models import User
-from utils import error_json
+from core.utils import error_json, redirect
+from core.decorators import login_required, anonymous_required
 
 
-def redirect(request, router_name):
-    url = request.app.router[router_name].url_for()
-    raise web.HTTPFound(url)
+class AuthView(web.View):
+
+    async def login_user(self, user_id):
+        """ Put user to session and redirect to Index """
+        self.request.session['user'] = str(user_id)
+        self.request.session['time'] = time()
+        redirect(self.request, 'main')
 
 
-def set_session(session, user_id, request):
-    session['user'] = str(user_id)
-    session['last_visit'] = time()
-    redirect(request, 'main')
+class Login(AuthView):
+    template_name = 'auth/login.html'
+    template_content = 'Please enter login or email'
 
-
-class Login(web.View):
-
-    @aiohttp_jinja2.template('auth/login.html')
+    @anonymous_required
+    @aiohttp_jinja2.template(template_name)
     async def get(self):
-        session = await get_session(self.request)
-        if session.get('user'):
-            redirect(self.request, 'main')
-        return {'content': 'Please enter login or email'}
+        return {'content': self.template_content}
 
+    @anonymous_required
+    @aiohttp_jinja2.template(template_name)
     async def post(self):
         data = await self.request.post()
         user = User(self.request.app.db, data)
         result = await user.check_user()
         if isinstance(result, dict):
-            session = await get_session(self.request)
-            set_session(session, str(result['_id']), self.request)
+            await self.login_user(result['_id'])
         else:
-            return web.Response(content_type='application/json', text=error_json('The username or password you '
-                                                                                 'entered is incorrect'))
+            return {'content': self.template_content, 'error': 'The username or password you entered is incorrect'}
 
 
-class SignIn(web.View):
+class SignIn(AuthView):
+    template_name = 'auth/sign.html'
+    template_content = 'Please enter your data'
 
-    @aiohttp_jinja2.template('auth/sign.html')
+    @anonymous_required
+    @aiohttp_jinja2.template(template_name)
     async def get(self, **kwargs):
-        session = await get_session(self.request)
-        if session.get('user'):
-            redirect(self.request, 'main')
-        return {'content': 'Please enter your data'}
+        return {'content': self.template_content}
 
+    @anonymous_required
     async def post(self, **kwargs):
         data = await self.request.post()
         user = User(self.request.app.db, data)
         result = await user.create_user()
         if isinstance(result, ObjectId):
-            session = await get_session(self.request)
-            set_session(session, str(result), self.request)
+            await self.login_user(result)
         else:
             return web.Response(content_type='application/json', text=error_json(result))
 
 
 class Logout(web.View):
 
+    @login_required
     async def get(self, **kwargs):
-        session = await get_session(self.request)
-        if session.get('user'):
-            del session['user']
-            redirect(self.request, 'login')
-        else:
-            raise web.HTTPForbidden(body=b'Forbidden')
+        self.request.session.pop('user')
+        redirect(self.request, 'login')
