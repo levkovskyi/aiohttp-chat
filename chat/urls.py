@@ -1,7 +1,9 @@
+from aiohttp import web
+
 from chat import views
 
 
 routes = (
-    dict(method='GET', path='/', handler=views.ChatList, name='main'),
-    dict(method='GET', path='/ws', handler=views.WebSocket, name='chat'),
+    web.view('/', views.ChatList, name='main'),
+    web.view('/ws', views.WebSocket, name='chat'),
 )

@@ -1,8 +1,10 @@
+from aiohttp import web
+
 from auth import views
 
 
 routes = (
-    dict(method='*', path='/login', handler=views.Login, name='login'),
-    dict(method='*', path='/sign-in', handler=views.SignIn, name='sign_in'),
-    dict(method='GET', path='/logout', handler=views.Logout, name='logout'),
+    web.view('/login', views.Login, name='login'),
+    web.view('/sign-in', views.SignIn, name='sign_in'),
+    web.view('/logout', views.Logout, name='logout'),
 )
