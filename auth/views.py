@@ -2,7 +2,7 @@ from time import time
 
 import aiohttp_jinja2
 from aiohttp import web
-from bson.objectid import ObjectId
+from marshmallow.exceptions import ValidationError
 
 from auth.models import User
 from core.utils import error_json, redirect
@@ -31,10 +31,9 @@ class Login(AuthView):
     @aiohttp_jinja2.template(template_name)
     async def post(self):
         data = await self.request.post()
-        user = User(self.request.app.db, data)
-        result = await user.check_user()
-        if isinstance(result, dict):
-            await self.login_user(result['_id'])
+        user = await User.find_one({'login': data.get('login'), 'password': data.get('password')})
+        if user:
+            await self.login_user(user.id)
         else:
             return {'content': self.template_content, 'error': 'The username or password you entered is incorrect'}
 
@@ -51,12 +50,15 @@ class SignIn(AuthView):
     @anonymous_required
     async def post(self, **kwargs):
         data = await self.request.post()
-        user = User(self.request.app.db, data)
-        result = await user.create_user()
-        if isinstance(result, ObjectId):
-            await self.login_user(result)
+        try:
+            user = User(**data)
+            await user.ensure_indexes()
+            result = await user.commit()
+        except ValidationError as e:
+            print(e)
+            return web.Response(content_type='application/json', text=error_json('Error'))
         else:
-            return web.Response(content_type='application/json', text=error_json(result))
+            await self.login_user(result.inserted_id)
 
 
 class Logout(web.View):

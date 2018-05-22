@@ -1,17 +1,17 @@
 from datetime import datetime
+from umongo import Document, fields
 
-from settings import MESSAGE_COLLECTION
+from auth.models import User
+from core.db import instance
 
 
-class Message:
+@instance.register
+class Message(Document):
+    message = fields.StringField(required=True)
+    time = fields.DateTimeField(missing=datetime.now())
+    user_id = fields.ReferenceField(User, required=True)
 
-    def __init__(self, db, **kwargs):
-        self.collection = db[MESSAGE_COLLECTION]
-
-    async def save(self, user, msg, **kwargs):
-        result = await self.collection.insert({'user': user, 'msg': msg, 'time': datetime.now()})
-        return result
-
-    async def get_messages(self):
-        messages = self.collection.find().sort([('time', 1)])
-        return await messages.to_list(length=None)
+    @property
+    def user(self):
+        user = self.user_id._document
+        return user

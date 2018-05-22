@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
     function showError(error){
-        $('#error').html(error)
+        $('#error').html(String(error))
     }
 
     $('#submit').click(function(){
@@ -13,6 +13,7 @@ $(document).ready(function(){
 
             if (login && email && password){
                 $.post('sign-in', {'login': login, 'email': email, 'password': password}, function(data){
+
                     if (data.error){
                         showError(data.error)
                     }else{

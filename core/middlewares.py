@@ -1,5 +1,6 @@
 from aiohttp import web
 from aiohttp_session import get_session
+from bson.objectid import ObjectId
 
 from auth.models import User
 
@@ -11,5 +12,5 @@ async def request_user_middleware(request, handler):
 
     user_id = request.session.get('user')
     if user_id:
-        request.user = await User(request.app.db, {'id': request.session.get('user')}).get_user()
+        request.user = await User.find_one({'id': ObjectId(user_id)})
     return await handler(request)

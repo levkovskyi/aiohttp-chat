@@ -21,10 +21,7 @@ DEBUG = env.bool('DEBUG', default=False)
 SITE_HOST = env.str('HOST')
 SITE_PORT = env.int('PORT')
 SECRET_KEY = env.str('SECRET_KEY')
-MONGO_HOST = env.str('MONGO_HOST')
+MONGO_HOST = 'mongodb://{}:{}'.format(env.str('MONGO_DB_HOST'), env.str('MONGO_DB_PORT'))
 MONGO_DB_NAME = env.str('MONGO_DB_NAME')
-
-MESSAGE_COLLECTION = 'messages'
-USER_COLLECTION = 'users'
 
 STATIC_DIR = 'static'

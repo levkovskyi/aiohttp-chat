@@ -5,12 +5,12 @@ import jinja2
 from aiohttp import web
 from aiohttp_session import session_middleware
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
-from motor import motor_asyncio as ma
 
 from core.middlewares import request_user_middleware
-from core.utils import ws_shutdown
-from settings import log
+from core.ws import ws_shutdown
+from core.db import init_db, close_db
 from urls import routes, static_routes
+from settings import log
 import settings
 
 middle = [
@@ -28,13 +28,13 @@ app['static_root_url'] = static_routes.path
 # end route part
 
 # db connect
-app.client = ma.AsyncIOMotorClient(settings.MONGO_HOST)
-app.db = app.client[settings.MONGO_DB_NAME]
+app.on_startup.append(init_db)
+app.on_cleanup.append(close_db)
 # end db connect
 
 app.on_cleanup.append(ws_shutdown)
 app['websockets'] = []
 
 log.debug('start server')
-web.run_app(app)
+web.run_app(app, host='localhost', port=8080)
 log.debug('Stop server end')
