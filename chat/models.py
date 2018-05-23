@@ -2,10 +2,10 @@ from datetime import datetime
 from umongo import Document, fields
 
 from auth.models import User
-from core.db import instance
+from core.db import mongo_instance
 
 
-@instance.register
+@mongo_instance.register
 class Message(Document):
     message = fields.StringField(required=True)
     time = fields.DateTimeField(missing=datetime.now())

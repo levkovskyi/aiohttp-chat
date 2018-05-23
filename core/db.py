@@ -4,17 +4,22 @@ from umongo import MotorAsyncIOInstance
 import settings
 
 
-instance = MotorAsyncIOInstance()
+class MongoInstance(MotorAsyncIOInstance):
+
+    async def init(self, db):
+        super().init(db)
+        for model in self._doc_lookup.values():
+            await model.ensure_indexes()
+
+mongo_instance = MongoInstance()
+
 
 async def init_db(app):
     app.client = AsyncIOMotorClient(settings.MONGO_HOST)
     app.db = app.client[settings.MONGO_DB_NAME]
 
-    # Init umongo models
-    from chat.models import instance as chat_instance
-    from auth.models import instance as auth_instance
-    auth_instance.init(app.db)
-    chat_instance.init(app.db)
+    # Init mongo models
+    await mongo_instance.init(app.db)
 
 
 async def close_db(app):

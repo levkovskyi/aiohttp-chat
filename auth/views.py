@@ -52,7 +52,6 @@ class SignIn(AuthView):
         data = await self.request.post()
         try:
             user = User(**data)
-            await user.ensure_indexes()
             result = await user.commit()
         except ValidationError as e:
             print(e)
